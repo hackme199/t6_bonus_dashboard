@@ -101,27 +101,44 @@
               "Item" : data.feed.entry[i].gsx$item.$t,
               "Latitude": parseFloat(data.feed.entry[i].gsx$latitude.$t),
               "Longitude": parseFloat(data.feed.entry[i].gsx$longitude.$t),
-              "Priority": data.feed.entry[i].gsx$priority.$t
+              "Priority": data.feed.entry[i].gsx$priority.$t,
+              "OrderTime": data.feed.entry[i].gsx$ordertime.$t,
+              "DispatchTime": data.feed.entry[i].gsx$dispatchtime.$t,
+              "ShippingTime": data.feed.entry[i].gsx$shippingtime.$t
           };
           jsonDataObject.push(json_data);
               
           for (var j = 0; j < jsonDataObject.length; j++) {
               // console.log(jsonDataObject[j])
               var color
-              switch (jsonDataObject[j].Priority) {
-                  case "HP":
-                      color = "red"
-                      break;
-                  case "MP":
-                      color = "yellow"
-                      break;
-                  case "LP":
-                      color = "green"
-                      break;
-                  default:
-                      color = "red"
-                      break;
+              if(jsonDataObject[j].OrderTime){
+                if(jsonDataObject[j].DispatchTime=="-") {
+                color = "red"
               }
+              else {
+                if(jsonDataObject[j].ShippingTime=="-") {
+                  color = "yellow"
+                }
+                else {
+                  color = "green"
+                }
+              }
+              }
+             
+              // switch (jsonDataObject[j].Priority) {
+              //     case "HP":
+              //         color = "red"
+              //         break;
+              //     case "MP":
+              //         color = "yellow"
+              //         break;
+              //     case "LP":
+              //         color = "green"
+              //         break;
+              //     default:
+              //         color = "red"
+              //         break;
+              // }
 
               var Icon = new L.Icon({
               iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + color +'.png',
