@@ -104,23 +104,33 @@
               "Priority": data.feed.entry[i].gsx$priority.$t,
               "OrderTime": data.feed.entry[i].gsx$ordertime.$t,
               "DispatchTime": data.feed.entry[i].gsx$dispatchtime.$t,
-              "ShippingTime": data.feed.entry[i].gsx$shippingtime.$t
+              "ShippingTime": data.feed.entry[i].gsx$shippingtime.$t,
+              "DispatchedStatus": "",
+              "ShippingStatus": ""
           };
           jsonDataObject.push(json_data);
               
           for (var j = 0; j < jsonDataObject.length; j++) {
               // console.log(jsonDataObject[j])
               var color
+              var dispatchStatus
+              var shippedStatus
               if(jsonDataObject[j].OrderTime){
                 if(jsonDataObject[j].DispatchTime=="-") {
                 color = "red"
+                jsonDataObject[j].DispatchStatus = "NO"
+                jsonDataObject[j].ShippingStatus = "NO"
               }
               else {
                 if(jsonDataObject[j].ShippingTime=="-") {
                   color = "yellow"
+                  jsonDataObject[j].DispatchStatus = "YES"
+                jsonDataObject[j].ShippingStatus = "NO"
                 }
                 else {
                   color = "green"
+                  jsonDataObject[j].DispatchStatus = "YES"
+                jsonDataObject[j].ShippingStatus = "YES"
                 }
               }
               }
@@ -162,7 +172,7 @@
                       var marker = e.target;
                       popup = L.popup()
                       .setLatLng(marker.getLatLng())
-                      .setContent("Order ID: " + marker.myJsonData.OderID + " || Item: " +   marker.myJsonData.Item)
+                      .setContent("<center>Order ID: " + marker.myJsonData.OderID +"</center>" + "<br>" + " Dispatched Status : " +   marker.myJsonData.DispatchStatus + " || Shipped Status : " +   marker.myJsonData.ShippingStatus)
                       .openOn(map);
                   }
 
@@ -210,7 +220,7 @@
 
                 }
 
-                console.log(trHTML);
+                // console.log(trHTML);
         		$('#tableContent').html(trHTML);
         		var trHTML = '';
 
