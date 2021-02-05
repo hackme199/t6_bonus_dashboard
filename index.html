@@ -36,9 +36,9 @@
 
     <div class="container-fluid">
       <div class="row">
-             <div id="map" class="col col-6" style="height: 680px"></div>
+             <div id="map" class="col col-5" style="height: 680px"></div>
              
-             <div class="col col-6">
+             <div class="col col-7">
                <div class="row">
                  <div class="col col-12">
                    <table id="table1" class="table">
@@ -47,8 +47,13 @@
                         <th scope="col">Order ID</th>
                         <th scope="col">Item</th>
                         <th scope="col">Priority</th>
-                        <th scope="col">Quantity</th>
                         <th scope="col">City</th>
+                        <th scope="col">Dispatched</th>
+                        <th scope="col">Shipped</th>
+                        <th scope="col">OrderTime</th>
+                        <th scope="col">DispatchTime</th>
+                        <th scope="col">ShippingTime</th>
+                        <th scope="col">Time Taken</th>
                       </tr>
                     </thead>
                     <tbody id="tableContent">
@@ -172,7 +177,7 @@
                       var marker = e.target;
                       popup = L.popup()
                       .setLatLng(marker.getLatLng())
-                      .setContent("<center>Order ID: " + marker.myJsonData.OderID +"</center>" + "<br>" + " Dispatched Status : " +   marker.myJsonData.DispatchStatus + " || Shipped Status : " +   marker.myJsonData.ShippingStatus)
+                      .setContent("<center>City : "  + marker.myJsonData.City + "</center><hr>Order ID : " + marker.myJsonData.OderID + " || Dispatched : " +   marker.myJsonData.DispatchStatus + " || Shipped : " +   marker.myJsonData.ShippingStatus)
                       .openOn(map);
                   }
 
@@ -202,7 +207,8 @@
     
     function refreshTable(){
         
-        // var trHTML = '';	    
+        // var trHTML = '';	   
+        var jsonDataObject =[]; 
         
         $.getJSON('https://spreadsheets.google.com/feeds/list/1M03YzxwLoptzmNEk1Drp9HziPeBBrj0aa0RTiHNdaVU/5/public/full?alt=json', function(data) {
         	
@@ -210,15 +216,59 @@
 
             	for (var i = 0; i < data.feed.entry.length; ++i) {
                 	var myData_map, myData_order;
+                  var json_data = {
+                      "City": data.feed.entry[i].gsx$city.$t,
+                      "OderID" : data.feed.entry[i].gsx$orderid.$t,
+                      "Item" : data.feed.entry[i].gsx$item.$t,
+                      "Latitude": parseFloat(data.feed.entry[i].gsx$latitude.$t),
+                      "Longitude": parseFloat(data.feed.entry[i].gsx$longitude.$t),
+                      "Priority": data.feed.entry[i].gsx$priority.$t,
+                      "OrderTime": data.feed.entry[i].gsx$ordertime.$t,
+                      "DispatchTime": data.feed.entry[i].gsx$dispatchtime.$t,
+                      "ShippingTime": data.feed.entry[i].gsx$shippingtime.$t,
+                      "TimeTaken": data.feed.entry[i].gsx$timetaken.$t,
+                      "DispatchedStatus": "",
+                      "ShippingStatus": ""
+                  };
+                  jsonDataObject.push(json_data)
 
-                    trHTML += '<tr ><td>' + data.feed.entry[i].gsx$orderid.$t + 
-                        	  '</td><td>' + data.feed.entry[i].gsx$item.$t + 
-                        	  '</td><td>' + data.feed.entry[i].gsx$priority.$t + 
-                        	  '</td><td>' + data.feed.entry[i].gsx$orderquantity.$t + 
-                        	  '</td><td>'  + data.feed.entry[i].gsx$city.$t + 
+              }
+
+                  for (var j = 0; j < jsonDataObject.length; j++) {
+                    
+                    var dispatchStatus
+                    var shippedStatus
+                    if(jsonDataObject[j].OrderTime){
+                      if(jsonDataObject[j].DispatchTime=="-") {
+                      jsonDataObject[j].DispatchStatus = "NO"
+                      jsonDataObject[j].ShippingStatus = "NO"
+                    }
+                    else {
+                      if(jsonDataObject[j].ShippingTime=="-") {
+                        jsonDataObject[j].DispatchStatus = "YES"
+                      jsonDataObject[j].ShippingStatus = "NO"
+                      }
+                      else {
+                        jsonDataObject[j].DispatchStatus = "YES"
+                      jsonDataObject[j].ShippingStatus = "YES"
+                      }
+                    }
+                    }
+                    console.log(jsonDataObject[j])
+                    trHTML += '<tr ><td>' + jsonDataObject[j].OderID + 
+                        	  '</td><td>' + jsonDataObject[j].Item + 
+                        	  '</td><td>' + jsonDataObject[j].Priority + 
+                        	  '</td><td>' + jsonDataObject[j].City + 
+                        	  '</td><td>'  + jsonDataObject[j].DispatchStatus + 
+                            '</td><td>'  + jsonDataObject[j].ShippingStatus + 
+                            '</td><td>'  + jsonDataObject[j].OrderTime + 
+                            '</td><td>'  + jsonDataObject[j].DispatchTime + 
+                            '</td><td>'  + jsonDataObject[j].ShippingTime +
+                            '</td><td>'  + jsonDataObject[j].TimeTaken +
                         	  '</td></tr>';
+                  }
 
-                }
+                
 
                 // console.log(trHTML);
         		$('#tableContent').html(trHTML);
