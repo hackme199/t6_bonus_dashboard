@@ -238,24 +238,28 @@
                     
                     var dispatchStatus
                     var shippedStatus
+                    var color
                     if(jsonDataObject[j].OrderTime){
                       if(jsonDataObject[j].DispatchTime=="-") {
                       jsonDataObject[j].DispatchStatus = "NO"
                       jsonDataObject[j].ShippingStatus = "NO"
+                      color = "danger"
                     }
                     else {
                       if(jsonDataObject[j].ShippingTime=="-") {
                         jsonDataObject[j].DispatchStatus = "YES"
-                      jsonDataObject[j].ShippingStatus = "NO"
+                        jsonDataObject[j].ShippingStatus = "NO"
+                        color="warning"
                       }
                       else {
                         jsonDataObject[j].DispatchStatus = "YES"
-                      jsonDataObject[j].ShippingStatus = "YES"
+                        jsonDataObject[j].ShippingStatus = "YES"
+                        color="success"
                       }
                     }
                     }
                     console.log(jsonDataObject[j])
-                    trHTML += '<tr ><td>' + jsonDataObject[j].OderID + 
+                    trHTML += '<tr class=' +"table-"+color + '><td>' + jsonDataObject[j].OderID + 
                         	  '</td><td>' + jsonDataObject[j].Item + 
                         	  '</td><td>' + jsonDataObject[j].Priority + 
                         	  '</td><td>' + jsonDataObject[j].City + 
